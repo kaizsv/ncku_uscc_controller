@@ -7,10 +7,12 @@ from controller.device.actuator.irrigator import IrrActuator
 from controller.device.sensor.humidity import HumidSensor
 import os
 import rospy
+from std_msgs.msg import String
 
 def callback(data):
     print(data.data)
     rospy.signal_shutdown('s')
+    print("shutdown")
 
 def listener():
     rospy.init_node('listener', anonymous=True, disable_signals=True)
@@ -30,7 +32,6 @@ def main():
 
     #ros_device_subscriber = RosDeviceSubscriber()
     #ros_device_subscriber.start()
-
     #listener()
 
     #while
