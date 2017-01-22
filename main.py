@@ -6,20 +6,23 @@ from controller.device.actuator import Actuator
 from controller.device.sensor import Sensor
 import os
 import rospy
-from std_msgs.msg import String
-import Queue
+from std_msgs.msg import String, Int32
 
-def send_action_to_actuator(send):
-    pub = rospy.Publisher('chatter', String, queue_size=10)
-    rospy.init_node('actuator', anonymous=True)
+def initlize_ros():
+    pub1 = rospy.Publisher('relay1', Int32, queue_size=10)
+    pub2 = rospy.Publisher('relay2', Int32, queue_size=10)
+    pub4 = rospy.Publisher('relay4', Int32, queue_size=10)
+    sub0 = 's0'
+    sub1 = 's1'
+    sub2 = 's2'
+    sub3 = 's3'
+    sub4 = 's4'
+    rospy.init_node('controller', anonymous=True)
     rate = rospy.Rate(10)
-    pub.publish(send)
-    rate.sleep()
-'''
-def init_ros():
-    pub = rospy.Publisher('chatter', String, que
-'''
+    return pub1, pub2, pub4, sub0, sub1, sub2, sub3, sub4
+
 def main():
+
     log = Log(Log.DEBUG, __file__)
 
     cid = get_controller_ip()
@@ -30,7 +33,9 @@ def main():
     log.info('start rpc server')
     run_rpc_server(cid)
 
-    send_queue = Queue.Queue()
+    pub1, pub2, pub4, sub0, sub1, sub2, sub3, sub4 = initlize_ros()
+
+    print('start')
 
 ##########################################################################
 # dac 0
@@ -41,27 +46,27 @@ def main():
 
     tid = 0
     log.info('new temp sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'S', tid))
-    temp = Sensor(cid, did, 'ST', tid, 40000)
+    temp = Sensor(cid, did, 'ST', tid, 40000, topic=sub0)
     data_store_manager.assign_end_device_to_dac(did, temp)
 
     tid = 1
     log.info('new humid sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SH', tid))
-    humid = Sensor(cid, did, 'SH', tid, 40001)
+    humid = Sensor(cid, did, 'SH', tid, 40001, topic=sub1)
     data_store_manager.assign_end_device_to_dac(did, humid)
 
     tid = 2
     log.info('new soil temp sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SHT', tid))
-    soil_temp = Sensor(cid, did, 'SHT', tid, 40002)
+    soil_temp = Sensor(cid, did, 'SHT', tid, 40002, topic=sub2)
     data_store_manager.assign_end_device_to_dac(did, soil_temp)
 
     tid = 3
     log.info('new ph sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SPH', tid))
-    soil_ph = Sensor(cid, did, 'SPH', tid, 40003)
+    soil_ph = Sensor(cid, did, 'SPH', tid, 40003, topic=sub3)
     data_store_manager.assign_end_device_to_dac(did, soil_ph)
 
     tid = 4
     log.info('new light sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SI', tid))
-    light = Sensor(cid, did, 'SI', tid, 40004)
+    light = Sensor(cid, did, 'SI', tid, 40004, topic=sub4)
     data_store_manager.assign_end_device_to_dac(did, light)
 
 ########################################################################
@@ -73,17 +78,17 @@ def main():
 
     tid = 5
     log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
-    irr = Actuator(cid, did, 'AW', tid, 40005, send_queue)
+    irr = Actuator(cid, did, 'AW', tid, 40005, pub=pub1)
     data_store_manager.assign_end_device_to_dac(did, irr)
 
     tid = 6
     log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
-    irr = Actuator(cid, did, 'AW', tid, 40006, send_queue)
+    irr = Actuator(cid, did, 'AW', tid, 40006, pub=pub2)
     data_store_manager.assign_end_device_to_dac(did, irr)
 
     tid = 7
     log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
-    irr = Actuator(cid, did, 'AW', tid, 40007, send_queue)
+    irr = Actuator(cid, did, 'AW', tid, 40007, pub=pub4)
     data_store_manager.assign_end_device_to_dac(did, irr)
 
 ########################################################################
@@ -101,11 +106,7 @@ def main():
     rpc_register('actuator', {'CID':cid, 'DID':'1', 'Type':'AW', 'TID':'6', 'Address': '40006'})
     rpc_register('actuator', {'CID':cid, 'DID':'1', 'Type':'AW', 'TID':'7', 'Address': '40007'})
     '''
-    '''
-    while True:
-        send = send_queue.get()
-        send_action_to_actuator(send)
-    '''
+########################################################################
 
 def get_controller_ip():
     f = os.popen('ifconfig | grep "inet\ addr" | grep -v "127.0.0.1" | cut -d: -f 2 | cut -d" " -f 1 | tr -d "\n"')

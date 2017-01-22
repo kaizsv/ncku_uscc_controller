@@ -5,10 +5,9 @@ import threading
 import xmlrpclib
 
 ip = 'http://192.168.1.30:8000'
-#ip = 'http://192.168.1.30:8080'
 
 ###############################################################
-# rpc client
+# rpc client for server
 
 def rpc_register(device, _id):
     s = xmlrpclib.ServerProxy(ip)
@@ -17,6 +16,9 @@ def rpc_register(device, _id):
 def rpc_event(device, _id):
     s = xmlrpclib.ServerProxy(ip)
     print(s.event('disconnect', device, _id))
+
+###############################################################
+# rpc server for server
 
 class ReuqestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
@@ -47,3 +49,5 @@ def rpc_server(cid):
 
 def run_rpc_server(cid):
     threading.Thread(target=rpc_server, args=(cid,)).start()
+
+#####################################################################
