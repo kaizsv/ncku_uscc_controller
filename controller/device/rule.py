@@ -34,10 +34,11 @@ class Rule(object):
     def initialize(self, rule):
         try:
             self.conditions = rule['condition']
-            for condition in self.conditions:
-                self.reference_sensors.append(condition['sensor'])
-                self.sensor_operators.append(condition['operator'])
-                self.operator_thresholds.append(condition['threshold'])
+            if self.conditions != None:
+                for condition in self.conditions:
+                    self.reference_sensors.append(condition['sensor'])
+                    self.sensor_operators.append(condition['operator'])
+                    self.operator_thresholds.append(condition['threshold'])
             # target actuator action
             self.actions = rule['action']
             for action in self.actions:

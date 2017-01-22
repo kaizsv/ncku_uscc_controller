@@ -34,8 +34,9 @@ def rpc_set_imm_rule(rpc_rule):
         return 'FAILURE'
 
 def rpc_server(cid):
-    server = SimpleXMLRPCServer(('localhost', 8000),
-                                requestHandler=ReuqestHandler)
+    server = SimpleXMLRPCServer((cid, 8000),
+                                requestHandler=ReuqestHandler,
+                                allow_none=True)
     server.register_introspection_functions()
 
     server.register_function(rpc_set_rule, 'rpc_set_rule')
