@@ -5,7 +5,20 @@ from controller.comm.rpc import run_rpc_server, rpc_register
 from controller.device.actuator import Actuator
 from controller.device.sensor import Sensor
 import os
+import rospy
+from std_msgs.msg import String
+import Queue
 
+def send_action_to_actuator(send):
+    pub = rospy.Publisher('chatter', String, queue_size=10)
+    rospy.init_node('actuator', anonymous=True)
+    rate = rospy.Rate(10)
+    pub.publish(send)
+    rate.sleep()
+'''
+def init_ros():
+    pub = rospy.Publisher('chatter', String, que
+'''
 def main():
     log = Log(Log.DEBUG, __file__)
 
@@ -16,6 +29,8 @@ def main():
 
     log.info('start rpc server')
     run_rpc_server(cid)
+
+    send_queue = Queue.Queue()
 
 ##########################################################################
 # dac 0
@@ -58,22 +73,22 @@ def main():
 
     tid = 5
     log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
-    irr = Actuator(cid, did, 'AW', tid, 40005)
+    irr = Actuator(cid, did, 'AW', tid, 40005, send_queue)
     data_store_manager.assign_end_device_to_dac(did, irr)
 
     tid = 6
     log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
-    irr = Actuator(cid, did, 'AW', tid, 40006)
+    irr = Actuator(cid, did, 'AW', tid, 40006, send_queue)
     data_store_manager.assign_end_device_to_dac(did, irr)
 
     tid = 7
     log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
-    irr = Actuator(cid, did, 'AW', tid, 40007)
+    irr = Actuator(cid, did, 'AW', tid, 40007, send_queue)
     data_store_manager.assign_end_device_to_dac(did, irr)
 
 ########################################################################
 # register device
-
+    '''
     rpc_register('controller', {'CID':cid})
     rpc_register('dac', {'CID':cid, 'DID':'0'})
     rpc_register('sensor', {'CID':cid, 'DID':'0', 'Type':'ST', 'TID':'0', 'Address': '40000'})
@@ -85,7 +100,12 @@ def main():
     rpc_register('actuator', {'CID':cid, 'DID':'1', 'Type':'AW', 'TID':'5', 'Address': '40005'})
     rpc_register('actuator', {'CID':cid, 'DID':'1', 'Type':'AW', 'TID':'6', 'Address': '40006'})
     rpc_register('actuator', {'CID':cid, 'DID':'1', 'Type':'AW', 'TID':'7', 'Address': '40007'})
-
+    '''
+    '''
+    while True:
+        send = send_queue.get()
+        send_action_to_actuator(send)
+    '''
 
 def get_controller_ip():
     f = os.popen('ifconfig | grep "inet\ addr" | grep -v "127.0.0.1" | cut -d: -f 2 | cut -d" " -f 1 | tr -d "\n"')

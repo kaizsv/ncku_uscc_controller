@@ -19,17 +19,20 @@ schedule = [
     },
     {
         'condition':None,
+        'action':[{'actuator':{'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':6, 'ADDRESS':40006}, 'value':1}],
+        'period':{'start_time':'2017-01-21 03:08:00', 'duration':0},
+        'rule_make_time':time.strftime("%Y-%m-%d %H:%M:%S")
+    }
+        #'action':[{'actuator':{'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':5, 'ADDRESS':40005}, 'value':1}, {'actuator':{'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':6, 'ADDRESS':40006}, 'value':1}],
+]
+'''
+    {
+        'condition':None,
         'action':[{'actuator':{'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':7, 'ADDRESS':40007}, 'value':1}],
         'period':{'start_time':'2017-01-21 03:08:00', 'duration':10},
         'rule_make_time':time.strftime("%Y-%m-%d %H:%M:%S")
     },
-    {
-        'condition':None,
-        'action':[{'actuator':{'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':5, 'ADDRESS':40005}, 'value':1}, {'actuator':{'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':6, 'ADDRESS':40006}, 'value':1}],
-        'period':{'start_time':'2017-01-21 03:08:00', 'duration':0},
-        'rule_make_time':time.strftime("%Y-%m-%d %H:%M:%S")
-    }
-]
+'''
 
 
 print('http://'+cid+':8000')
