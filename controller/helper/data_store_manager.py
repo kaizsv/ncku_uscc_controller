@@ -22,12 +22,16 @@ class DataStoreManager(object):
     def assign_schedule_to_dac(rpc_schedule):
         rules = list()
         for rule in rpc_schedule:
-            r = Rule(rule)
+            r = Rule()
             if not r.initialize(rule):
                 return False
             rules.append(r)
         for rule in rules:
-            for target_tid in rule.target_tid:
-                thread = DataStoreManager.dac_threads[target_tid]
-                thread.assign_rule_to_dac_schedule(rule)
+            action_in_same_dac = set(rule.target_did)
+            for action in rule.actions:
+                target = action['actuator']
+                if target['DID'] in action_in_same_dac:
+                    thread = DataStoreManager.dac_threads[target['DID']]
+                    thread.assign_rule_to_dac_schedule(rule)
+                    action_in_same_dac.remove(target['DID'])
         return True

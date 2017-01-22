@@ -14,7 +14,7 @@ class Rule(object):
     }
     '''
 
-    def __init__(self, rule):
+    def __init__(self):
         self.immediate_control = False
         self.duration_control = False
         self.condition_control = False
@@ -30,7 +30,6 @@ class Rule(object):
         self.target_tid = list()
         self.target_address = list()
         self.target_value = list()
-        # condition
 
     def initialize(self, rule):
         try:

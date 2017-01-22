@@ -1,6 +1,6 @@
 from controller.helper.log import Log
 import threading
-import queue
+import Queue
 import time
 
 log = Log(Log.DEBUG, __file__)
@@ -13,7 +13,7 @@ class DACController(threading.Thread):
         self.cid = cid
         self.did = did
         self.data_store_manager = data_store_manager
-        self.schedule_queue = queue.Queue()
+        self.schedule_queue = Queue.Queue()
         self.sensor_seq = dict()
         self.actuator_seq = dict()
         self.actuator_immediate = dict()
@@ -66,15 +66,17 @@ class DACController(threading.Thread):
                     if target_actuator:
                         target_actuator.make_action(action['value'])
 
-'''
+
             elif rule.duration_control:
                 if rule.get_start_time_delta() < 0:
-                    target_actuator = self.get_end_device_from_id(rule.target)
+                    for action in rule.actions:
+                        target = action['actuator']
+                        target_actuator = self.get_end_device_from_id(target)
                     if target_actuator:
-                        target_actuator.schedule_action(rule.action, rule.duration)
+                        target_actuator.schedule_action(action['value'], rule.duration)
                 else:
                     self.schedule_queue.put(rule)
-
+'''
             elif rule.condition_control:
                 and_condition = True
                 for i in range(len(rule.conditions)):

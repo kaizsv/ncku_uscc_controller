@@ -2,6 +2,21 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
 from controller.helper.data_store_manager import DataStoreManager
 import threading
+import xmlrpclib
+
+ip = 'http://192.168.43.120:8000'
+#ip = 'http://192.168.1.30:8080'
+
+###############################################################
+# rpc client
+
+def rpc_register(device, _id):
+    s = xmlrpclib.ServerProxy(ip)
+    print(s.register(device, _id))
+
+def rpc_event(device, _id):
+    s = xmlrpclib.ServerProxy(ip)
+    print(s.event('disconnect', device, _id))
 
 class ReuqestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
@@ -18,8 +33,8 @@ def rpc_set_imm_rule(rpc_rule):
     else:
         return 'FAILURE'
 
-def rpc_server():
-    server = SimpleXMLRPCServer(("localhost", 8000),
+def rpc_server(cid):
+    server = SimpleXMLRPCServer(('localhost', 8000),
                                 requestHandler=ReuqestHandler)
     server.register_introspection_functions()
 
@@ -29,5 +44,5 @@ def rpc_server():
 
     server.serve_forever()
 
-def run_rpc_server():
-    threading.Thread(target=rpc_server).start()
+def run_rpc_server(cid):
+    threading.Thread(target=rpc_server, args=(cid,)).start()

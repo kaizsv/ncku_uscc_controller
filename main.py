@@ -1,23 +1,10 @@
 from controller.helper.log import Log
 from controller.helper.data_store_manager import DataStoreManager
 from controller.dac.DAC_controller import DACController
-from controller.comm.rpc import run_rpc_server
-from controller.comm.ros_device_subscriber import RosDeviceSubscriber
-from controller.device.actuator.irrigator import IrrActuator
-from controller.device.sensor.humidity import HumidSensor
+from controller.comm.rpc import run_rpc_server, rpc_register
+from controller.device.actuator import Actuator
+from controller.device.sensor import Sensor
 import os
-import rospy
-from std_msgs.msg import String
-
-def callback(data):
-    print(data.data)
-    rospy.signal_shutdown('s')
-    print("shutdown")
-
-def listener():
-    rospy.init_node('listener', anonymous=True, disable_signals=True)
-    rospy.Subscriber('hello', String, callback)
-    rospy.spin()
 
 def main():
     log = Log(Log.DEBUG, __file__)
@@ -28,32 +15,77 @@ def main():
     data_store_manager = DataStoreManager()
 
     log.info('start rpc server')
-    run_rpc_server()
+    run_rpc_server(cid)
 
-    #ros_device_subscriber = RosDeviceSubscriber()
-    #ros_device_subscriber.start()
-    #listener()
-
-    #while
+##########################################################################
+# dac 0
     did = 0
     log.info('start a new dac thread, did: {0}'.format(did))
     thread = DACController(data_store_manager, cid, did)
     thread.initial()
 
     tid = 0
-    log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
-    irr = IrrActuator(cid, did, 'AW', tid, 40000)
-    data_store_manager.assign_end_device_to_dac(did, irr)
+    log.info('new temp sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'S', tid))
+    temp = Sensor(cid, did, 'ST', tid, 40000)
+    data_store_manager.assign_end_device_to_dac(did, temp)
 
     tid = 1
-    log.info('new humid sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'S', tid))
-    humid = HumidSensor(cid, did, 'S', tid, 40001)
+    log.info('new humid sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SH', tid))
+    humid = Sensor(cid, did, 'SH', tid, 40001)
     data_store_manager.assign_end_device_to_dac(did, humid)
+    
+    tid = 2
+    log.info('new soil temp sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SHT', tid))
+    soil_temp = Sensor(cid, did, 'SHT', tid, 40002)
+    data_store_manager.assign_end_device_to_dac(did, soil_temp)
 
+    tid = 3
+    log.info('new ph sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SPH', tid))
+    soil_ph = Sensor(cid, did, 'SPH', tid, 40003)
+    data_store_manager.assign_end_device_to_dac(did, soil_ph)
+
+    tid = 4
+    log.info('new light sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SI', tid))
+    light = Sensor(cid, did, 'SI', tid, 40004)
+    data_store_manager.assign_end_device_to_dac(did, light)
+
+########################################################################
+# dac 1
     did = 1
     log.info('start a new dac thread, did: {0}'.format(did))
     thread = DACController(data_store_manager, cid, did)
     thread.initial()
+
+    tid = 5
+    log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
+    irr = Actuator(cid, did, 'AW', tid, 40005)
+    data_store_manager.assign_end_device_to_dac(did, irr)
+
+    tid = 6
+    log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
+    irr = Actuator(cid, did, 'AW', tid, 40006)
+    data_store_manager.assign_end_device_to_dac(did, irr)
+
+    tid = 7
+    log.info('new irrigrate actuator at did: {0}, type:{1}, tid:{2}'.format(did, 'AW', tid))
+    irr = Actuator(cid, did, 'AW', tid, 40007)
+    data_store_manager.assign_end_device_to_dac(did, irr)
+
+########################################################################
+# register device
+'''
+    rpc_register('controller', {'CID':cid})
+    rpc_register('dac', {'CID':cid, 'DID':0})
+    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'ST', 'TID':0, 'ADDRESS': 40000})
+    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'SH', 'TID':1, 'ADDRESS': 40001})
+    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'SHT', 'TID':2, 'ADDRESS': 40002})
+    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'SPH', 'TID':3, 'ADDRESS': 40003})
+    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'SI', 'TID':4, 'ADDRESS': 40004})
+    rpc_register('dac', {'CID':cid, 'DID':1})
+    rpc_register('actuator', {'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':5, 'ADDRESS': 40005})
+    rpc_register('actuator', {'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':6, 'ADDRESS': 40006})
+    rpc_register('actuator', {'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':7, 'ADDRESS': 40007})
+'''
 
 def get_controller_ip():
     f = os.popen('ifconfig | grep "inet\ addr" | grep -v "127.0.0.1" | cut -d: -f 2 | cut -d" " -f 1 | tr -d "\n"')
