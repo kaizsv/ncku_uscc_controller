@@ -5,7 +5,15 @@ import time
 
 log = Log(Log.DEBUG, __file__)
 
+def subscribe_every_sensor():
+    while True:
+        for sensor in DACController.sensor_seq.values():
+            sensor.subscribe_value()
+        time.sleep(0.1)
+
 class DACController(threading.Thread):
+
+    sensor_seq = dict()
 
     def __init__(self, data_store_manager, cid, did):
         threading.Thread.__init__(self)
@@ -14,19 +22,20 @@ class DACController(threading.Thread):
         self.did = did
         self.data_store_manager = data_store_manager
         self.schedule_queue = Queue.Queue()
-        self.sensor_seq = dict()
         self.actuator_seq = dict()
         self.actuator_immediate = dict()
 
     def initial(self):
         # initial
         self.data_store_manager.append_dac_thread(self.did, self)
+        threading.Thread(target=subscribe_every_sensor).start()
         # start thread
         self.start()
 
+
     def get_end_device_from_id(self, end_device_id):
         if end_device_id['TYPE'][0] == 'S':
-            temp_device_seq = self.sensor_seq
+            temp_device_seq = DACController.sensor_seq
         elif end_device_id['TYPE'][0] == 'A':
             temp_device_seq = self.actuator_seq
 
@@ -44,7 +53,7 @@ class DACController(threading.Thread):
             self.actuator_seq[end_device.TID] = end_device
             log.info('DAC {0} append an actuator, type {1}, tid {2}'.format(self.did, end_device.TYPE, end_device.TID))
         elif end_device.is_sensor:
-            self.sensor_seq[end_device.TID] = end_device
+            DACController.sensor_seq[end_device.TID] = end_device
             log.info('DAC {0} append a sensor, type {1}, tid {2}'.format(self.did, end_device.TYPE, end_device.TID))
         else:
             log.error('wrong device tyep')

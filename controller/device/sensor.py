@@ -9,12 +9,10 @@ class Sensor(EndDevice):
         self.value = None
 
     def callback(self, data):
-        print(data.data)
-        rospy.signal_shutdown('once')
-        return data.data
+        self.value = data.data
+
+    def subscribe_value(self):
+        rospy.Subscriber(self.topic, String, self.callback)
 
     def get_value(self):
-        rospy.init_node(self.TYPE, anonymous=True, disable_signals=True)
-        rospy.Subscriber(self.topic, String, self.callback)
-        a=rospy.spin()
-        print(a)
+        return self.value

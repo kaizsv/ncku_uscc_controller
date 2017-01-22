@@ -15,8 +15,12 @@ class DataStoreManager(object):
         return DataStoreManager.dac_threads[did]
 
     def assign_end_device_to_dac(self, did, end_device):
-        dac_thread = self.get_dac_thread_by_id(did)
-        dac_thread.assign_end_device(end_device)
+        if end_device.is_sensor:
+            for dac_thread in DataStoreManager.dac_threads.values():
+                dac_thread.assign_end_device(end_device)
+        else:
+            dac_thread = self.get_dac_thread_by_id(did)
+            dac_thread.assign_end_device(end_device)
 
     @staticmethod
     def assign_schedule_to_dac(rpc_schedule):
