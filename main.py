@@ -73,19 +73,19 @@ def main():
 
 ########################################################################
 # register device
-'''
+
     rpc_register('controller', {'CID':cid})
-    rpc_register('dac', {'CID':cid, 'DID':0})
-    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'ST', 'TID':0, 'ADDRESS': 40000})
-    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'SH', 'TID':1, 'ADDRESS': 40001})
-    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'SHT', 'TID':2, 'ADDRESS': 40002})
-    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'SPH', 'TID':3, 'ADDRESS': 40003})
-    rpc_register('sensor', {'CID':cid, 'DID':0, 'TYPE':'SI', 'TID':4, 'ADDRESS': 40004})
-    rpc_register('dac', {'CID':cid, 'DID':1})
-    rpc_register('actuator', {'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':5, 'ADDRESS': 40005})
-    rpc_register('actuator', {'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':6, 'ADDRESS': 40006})
-    rpc_register('actuator', {'CID':cid, 'DID':1, 'TYPE':'AW', 'TID':7, 'ADDRESS': 40007})
-'''
+    rpc_register('dac', {'CID':cid, 'DID':'0'})
+    rpc_register('sensor', {'CID':cid, 'DID':'0', 'Type':'ST', 'TID':'0', 'Address': '40000'})
+    rpc_register('sensor', {'CID':cid, 'DID':'0', 'Type':'SH', 'TID':'1', 'Address': '40001'})
+    rpc_register('sensor', {'CID':cid, 'DID':'0', 'Type':'SHT', 'TID':'2', 'Address': '40002'})
+    rpc_register('sensor', {'CID':cid, 'DID':'0', 'Type':'SPH', 'TID':'3', 'Address': '40003'})
+    rpc_register('sensor', {'CID':cid, 'DID':'0', 'Type':'SI', 'TID':'4', 'Address': '40004'})
+    rpc_register('dac', {'CID':cid, 'DID':'1'})
+    rpc_register('actuator', {'CID':cid, 'DID':'1', 'Type':'AW', 'TID':'5', 'Address': '40005'})
+    rpc_register('actuator', {'CID':cid, 'DID':'1', 'Type':'AW', 'TID':'6', 'Address': '40006'})
+    rpc_register('actuator', {'CID':cid, 'DID':'1', 'Type':'AW', 'TID':'7', 'Address': '40007'})
+
 
 def get_controller_ip():
     f = os.popen('ifconfig | grep "inet\ addr" | grep -v "127.0.0.1" | cut -d: -f 2 | cut -d" " -f 1 | tr -d "\n"')

@@ -4,7 +4,7 @@ from controller.helper.data_store_manager import DataStoreManager
 import threading
 import xmlrpclib
 
-ip = 'http://192.168.43.120:8000'
+ip = 'http://192.168.1.30:8000'
 #ip = 'http://192.168.1.30:8080'
 
 ###############################################################
