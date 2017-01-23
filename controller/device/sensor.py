@@ -1,6 +1,6 @@
 from controller.device.end_device import EndDevice
 import rospy
-from std_msgs.msg import String, Float32
+from std_msgs.msg import String, Float32, Int16
 
 class Sensor(EndDevice):
     def __init__(self, cid, did, Type, tid, address, topic):
@@ -9,10 +9,16 @@ class Sensor(EndDevice):
         self.value = None
 
     def callback(self, data):
-        self.value = data.data
+        print(data.data)
+        if self.TYPE == 'ST':
+            pass
+        elif self.TYPE == 'SH':
+            pass
+        else:
+            self.value = data.data
 
     def subscribe_value(self):
-        rospy.Subscriber(self.topic, String, self.callback)
+        rospy.Subscriber(self.topic, Int16, self.callback)
 
     def get_value(self):
         return self.value
