@@ -1,9 +1,9 @@
 """
     Doc:
-        產生基本畫面的配置
+        generate general button frames
 """
-from tkinter import *
-import tkinter as tk
+from Tkinter import *
+import Tkinter as tk
 from PIL import Image as Img, ImageTk as ImgTk
 from functools import partial
 

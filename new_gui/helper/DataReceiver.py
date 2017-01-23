@@ -1,13 +1,11 @@
 """
     Doc:
-        1. 解析 Controller 變成 DAC 資料，並傳回 controller_gui 中的函數負責顯示所有的 DAC 資料
-        2. 解析 DAC 變成 sensor 資料，並傳回 controller_gui 中的函數負責顯示一個 DAC 所有的 sensor 資料
 """
-from tkinter import *
-import tkinter as Tk
+from Tkinter import *
+import Tkinter as Tk
 
 # ask redwolf how the data storage format is
-class DataReceiver(object):
+class Receiver(object):
     # parse data here and abstract DACs and Sensors
     def __init__(self, dataObj):
         parseAllData(dataobj)
