@@ -35,6 +35,9 @@ def rpc_set_imm_rule(rpc_rule):
     else:
         return 'FAILURE'
 
+def rpc_get_sensor_value(tid):
+    return DataStoreManager.get_sensor_value_by_tid(tid)
+
 def rpc_server(cid):
     server = SimpleXMLRPCServer((cid, 8000),
                                 requestHandler=ReuqestHandler,
@@ -44,6 +47,8 @@ def rpc_server(cid):
     server.register_function(rpc_set_rule, 'rpc_set_rule')
 
     server.register_function(rpc_set_imm_rule, 'rpc_set_imm_rule')
+
+    server.register_function(rpc_get_sensor_value, 'rpc_get_sensor_value')
 
     server.serve_forever()
 

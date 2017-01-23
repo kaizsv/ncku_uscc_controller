@@ -39,3 +39,11 @@ class DataStoreManager(object):
                     thread.assign_rule_to_dac_schedule(rule)
                     action_in_same_dac.remove(target['DID'])
         return True
+
+    @staticmethod
+    def get_sensor_value_by_tid(tid):
+        sensor_seq = DataStoreManager.dac_threads[0].sensor_seq
+        for sensor in sensor_seq.values():
+            if sensor.TID == tid:
+                return sensor.get_value()
+        return 'FAILURE'
