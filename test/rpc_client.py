@@ -39,3 +39,4 @@ schedule = [
 print('http://'+cid+':8000')
 s = xmlrpclib.ServerProxy(('http://'+cid+':8000'), allow_none=True)
 print(s.rpc_set_rule(schedule))
+print(s.rpc_get_sensor_value(2))
