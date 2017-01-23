@@ -3,7 +3,19 @@
 """
     Doc:
         1. main window
-		2. display data
+        2. display data
+
+        frame type:
+            0: self.frame
+            1: self.secondframe
+            2: self.label - backgroundImage
+            3: self.mainFrame
+            4: self.controllerFrame
+            5: self.DACFrame
+            6: self.sensorFrame
+            7: self.actuatorFrame
+            8: self.sensorDataFrame
+            9: self.motionFrame
 """
 from Tkinter import *
 import Tkinter as tk
@@ -35,17 +47,6 @@ class GuiFrame(Frame):
 
 
 class MainWindow(tk.Frame):
-    # frame type:
-    #   0: self.frame
-    #   1: self.secondframe
-    #   2: self.label - backgroundImage
-    #   3: self.mainFrame
-    #   4: self.controllerFrame
-    #   5: self.DACFrame
-    #   6: self.sensorFrame
-    #   7: self.actuatorFrame
-    #   8: self.sensorDataFrame
-    #   9: self.motionFrame
 
     def __init__(self, master):
         self.isActuator = 0
@@ -83,9 +84,6 @@ class MainWindow(tk.Frame):
         self.secondframe.pack_propagate(0)
         self.secondframe.pack(fill=BOTH, expand=YES)
         self.frameType = 1
-        # self.thirdFrame = tk.Frame(self.secondframe)
-        # self.thirdFrame.pack_propagate(0)
-        # self.thirdFrame.pack(fill=BOTH, expand=YES)
         # ######################### background image
         self.createBgImageFrame(self.secondframe, bg, x, y)
         # titleframe
@@ -106,9 +104,6 @@ class MainWindow(tk.Frame):
         self.width, self.height = bg.size
         x = 0
         y = 0
-        # self.secondframe = tk.Frame(master, width=self.width, height=self.height, bg="", colormap="new")
-        # self.secondframe.pack_propagate(0)
-        # self.secondframe.pack(fill=BOTH, expand=YES)
         self.frameType = 1
         ### background image
         self.createBgImageFrame(self.secondframe, bg, x, y)
@@ -129,12 +124,6 @@ class MainWindow(tk.Frame):
         self.width, self.height = bg.size
         x = 0
         y = 0
-        # self.frame = tk.Frame(master, width=self.width, height=self.height, bg="", colormap="new")
-        # put frame to its parent
-        # self.frame.pack(fill=BOTH, expand=YES)
-        # self.secondframe = tk.Frame(master, width=self.width, height=self.height, bg="", colormap="new")
-        # self.secondframe.pack_propagate(0)
-        # self.secondframe.pack(fill=BOTH, expand=YES)
         self.frameType = 1
         self.createBgImageFrame(self.secondframe, bg, x, y)
         self.frameType = 2
@@ -192,7 +181,6 @@ class MainWindow(tk.Frame):
         label.backgroundImage = self.backgroundImage
         self.label.pack_propagate(0)
         # place label in frame
-        # self.label.place(x=0, y=0, relwidth=1, relheight=1)
         self.label.place(relx=0.5, rely=0.5, anchor=CENTER)
 
     def createInfoFrame(self, master):
@@ -285,7 +273,7 @@ class MainWindow(tk.Frame):
         label4.pack(anchor=CENTER, fill=X)
         label5 = Label(self.sensorDataFrame, width=btnWidth, height=newButtonHeight, text="Address: 4000" + str(tid))
         label5.pack(anchor=CENTER, fill=X)
-        label6 = Label(self.sensorDataFrame, width=btnWidth, height=newButtonHeight, text=str(sensor_data))
+        label6 = Label(self.sensorDataFrame, width=btnWidth, height=newButtonHeight, text="感測器數值: " + str(sensor_data))
         label6.pack(anchor=CENTER, fill=X)
 
     def assignTypeWithTID(self, tid):
@@ -350,7 +338,7 @@ class MainWindow(tk.Frame):
         self.createMotionFrame(self.secondframe)
 
     def alarmEvent(self):
-        tkMessageBox.showinfo("notice", "Actuator is broken")
+        tkMessageBox.showinfo("警告", "灑水器壞掉了！")
 
     def infoEvent(self, text, data):
         tkMessageBox.showinfo(text, data)
