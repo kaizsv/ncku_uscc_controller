@@ -294,7 +294,7 @@ class MainWindow(tk.Frame):
         elif tid == 1:
             return "SH"
         elif tid == 2:
-            return "SHT"
+            return "SHE"
         elif tid == 3:
             return "SPH"
         else:

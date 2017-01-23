@@ -55,8 +55,8 @@ def main():
     data_store_manager.assign_end_device_to_dac(did, humid)
 
     tid = 2
-    log.info('new soil temp sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SHT', tid))
-    soil_temp = Sensor(cid, did, 'SHT', tid, 40002, topic=sub2)
+    log.info('new soil temp sensor at did: {0}, type:{1}, tid:{2}'.format(did, 'SHE', tid))
+    soil_temp = Sensor(cid, did, 'SHE', tid, 40002, topic=sub2)
     data_store_manager.assign_end_device_to_dac(did, soil_temp)
 
     tid = 3
