@@ -12,11 +12,11 @@ def initlize_ros():
     pub1 = rospy.Publisher('/relay1', Int32, queue_size=10)
     pub2 = rospy.Publisher('/relay2', Int32, queue_size=10)
     pub4 = rospy.Publisher('/relay4', Int32, queue_size=10)
-    sub0 = '/s0'
-    sub1 = '/s1'
-    sub2 = '/s2'
-    sub3 = '/s3'
-    sub4 = '/s4'
+    sub0 = '/airmeter'
+    sub1 = '/airmeter'
+    sub2 = '/phmeter'
+    sub3 = '/soilmeter'
+    sub4 = '/sunlight'
     rospy.init_node('controller', anonymous=True)
     rate = rospy.Rate(10)
     return pub1, pub2, pub4, sub0, sub1, sub2, sub3, sub4
