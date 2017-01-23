@@ -13,6 +13,8 @@ from PIL import Image, ImageTk, ImageDraw
 from controller_gui.ControllerGUI import ControllerWindow
 from rule_gui.RuleGUI import RuleWindow
 from helper.DataReceiver import Receiver as DR
+import rpc_related.rpc_client as RpcClient
+import time
 
 global btnWidth
 global btnHeight
@@ -44,7 +46,7 @@ class MainWindow(tk.Frame):
     #   7: self.actuatorFrame
     #   8: self.sensorDataFrame
     #   9: self.motionFrame
-    #
+
     def __init__(self, master):
         self.isActuator = 0
         self.helv36 = tkFont.Font(family="Helvetica",size=36,weight="bold")
@@ -69,6 +71,12 @@ class MainWindow(tk.Frame):
         # self.createControllerViewButton(self.secondframe)
         ### test create two button frame
         self.setMainWindow(self.frame, self.bg, x, y)
+        self.TID = 5
+        self.DID = 1
+        self.address = 40005
+        self.CID = RpcClient.server_ip
+        self.buttonValue = 0
+        self.TYPE = 'AW'
 
     def setMainWindow(self, master, bg, x, y):
         self.secondframe = tk.Frame(master)
@@ -85,15 +93,13 @@ class MainWindow(tk.Frame):
         self.mainFrame = tk.Frame(master, width=self.width/2, height=self.height/6, bg="", colormap="new")
         self.mainFrame.pack_propagate(0)
         self.mainFrame.place(relx=.5, rely=.2, anchor=CENTER)
-        titleLabel = Label(self.mainFrame, text="歡迎光臨智慧農場!", width=self.width/2, height=self.height/5, fg="green", font=self.helv36)
+        titleLabel = Label(self.mainFrame, text="智慧農場", width=self.width/2, height=self.height/5, fg="green", font=self.helv36)
         titleLabel.pack(anchor=CENTER)
         self.createControllerViewButton(master)
         self.createRuleViewButton(master)
 
     def setControllerWindow(self, master):
         # path to bg
-        # tk.Frame.__init__(self, master)
-        # tkMessageBox.showinfo("dffsd", "zdfsfds")
         self.frameType = 0
         path = "rsz_farm_bg.jpg"
         bg = Image.open(path).convert('RGBA')
@@ -104,15 +110,15 @@ class MainWindow(tk.Frame):
         # self.secondframe.pack_propagate(0)
         # self.secondframe.pack(fill=BOTH, expand=YES)
         self.frameType = 1
-        ######################### background image
+        ### background image
         self.createBgImageFrame(self.secondframe, bg, x, y)
         self.frameType = 2
-        ######################### controller, DAC, sensor data
+        ### controller, DAC, sensor data
         self.createControllerFrame(self.secondframe)
-        ######################### notice & info button
+        ### notice & info button
         ### information frame
         self.createInfoFrame(self.secondframe)
-        ######################### go back button
+        ### go back button
         self.createBackButton(self.secondframe)
 
     def setRuleWindow(self, master):
@@ -142,14 +148,14 @@ class MainWindow(tk.Frame):
         self.controllerViewFrame = tk.Frame(master, width=self.width/4, height=self.height/6, bg="", colormap="new")
         self.controllerViewFrame.pack_propagate(0)
         self.controllerViewFrame.place(relx=0.1, rely=0.7, anchor=W)
-        self.controllerViewButton = Button(self.controllerViewFrame, text="設備管理", command=self.createControllerWindow, width=self.width/5, height=self.height/6, fg="red")
+        self.controllerViewButton = Button(self.controllerViewFrame, text="設備管理", command=self.createControllerWindow, width=self.width/5, height=self.height/6)
         self.controllerViewButton.pack()
 
     def createRuleViewButton(self, master):
         self.ruleViewFrame = tk.Frame(master, width=self.width/4, height=self.height/6, bg="", colormap="new")
         self.ruleViewFrame.pack_propagate(0)
         self.ruleViewFrame.place(relx=0.9, rely=0.7, anchor=E)
-        self.ruleViewButton = Button(self.ruleViewFrame, text="即時控制", command=self.createRuleWindow, width=self.width/5, height=self.height/6, fg="red")
+        self.ruleViewButton = Button(self.ruleViewFrame, text="即時控制", command=self.createRuleWindow, width=self.width/5, height=self.height/6)
         self.ruleViewButton.pack()
 
     # controllerViewButton events - create controller window
@@ -250,11 +256,11 @@ class MainWindow(tk.Frame):
         self.actuatorFrame = tk.Frame(master, width=self.width/3, height=self.height/3, bg="", colormap="new")
         # self.sensorFrame.pack_propagate(0)
         self.actuatorFrame.place(relx=.5, rely=.5, anchor=CENTER)
-        button1 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器", fg="red", command=self.actuatorButtonEvent)
+        button1 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 1", fg="red", command=lambda: self.actuatorButtonEvent(5, 40005))
         button1.pack(anchor=CENTER, fill=X)
-        button2 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="內遮蔭", fg="green", command=self.actuatorButtonEvent)
+        button2 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 2", fg="green", command=lambda: self.actuatorButtonEvent(6, 40006))
         button2.pack(anchor=CENTER, fill=X)
-        button3 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="電磁閥", fg="blue", command=self.actuatorButtonEvent)
+        button3 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 3", fg="blue", command=lambda: self.actuatorButtonEvent(7, 40007))
         button3.pack(anchor=CENTER, fill=X)
 
     def createSensorDataFrame(self, master):
@@ -278,13 +284,22 @@ class MainWindow(tk.Frame):
         self.motionFrame = tk.Frame(master, width=self.width/3, height=self.height/3, bg="", colormap="new")
         # self.sensorFrame.pack_propagate(0)
         self.motionFrame.place(relx=.5, rely=.5, anchor=CENTER)
-        button1 = Button(self.motionFrame, width=btnWidth, height=btnHeight, text="開", command=self.motionEvent)
+        button1 = Button(self.motionFrame, width=btnWidth, height=btnHeight, text="開", command=self.motionOnEvent)
         button1.pack(anchor=CENTER, fill=X)
-        button2 = Button(self.motionFrame, width=btnWidth, height=btnHeight, text="關", command=self.motionEvent)
+        button2 = Button(self.motionFrame, width=btnWidth, height=btnHeight, text="關", command=self.motionOffEvent)
         button2.pack(anchor=CENTER, fill=X)
 
-    def motionEvent(self):
-        pass
+    def motionOffEvent(self):
+        self.buttonValue = 0
+        # pack data
+        data = self.packRpcData()
+        # call function to send data
+        RpcClient.rpc_send_data(data)
+
+    def motionOnEvent(self):
+        self.buttonValue = 1
+        data = self.packRpcData()
+        RpcClient.rpc_send_data(data)
 
     def controllerButtonEvent(self):
         # clean canvas and draw new one
@@ -302,7 +317,9 @@ class MainWindow(tk.Frame):
         self.sensorFrame.destroy()
         self.createSensorDataFrame(self.secondframe)
 
-    def actuatorButtonEvent(self):
+    def actuatorButtonEvent(self, tid, actuator_address):
+        self.TID = tid
+        self.address = actuator_address
         self.actuatorFrame.destroy()
         self.createMotionFrame(self.secondframe)
 
@@ -312,7 +329,6 @@ class MainWindow(tk.Frame):
     def infoEvent(self, text, data):
         tkMessageBox.showinfo(text, data)
 
-###"""need to be able to go back"""
     def backEvent(self):
         # check frame type
         # actually controller frame should go back to main frame
@@ -343,6 +359,32 @@ class MainWindow(tk.Frame):
             self.createActuatorFrame(self.secondframe)
         else:
             pass
+
+    def packRpcData(self):
+        immediate_control = []
+        control_data = {
+            'condition': None,
+            'action': [
+                {
+                    'actuator': {
+                        'CID': self.CID,
+                        'DID': self.DID,
+                        'TYPE': self.TYPE,
+                        'TID': self.TID,
+                        'ADDRESS': self.address
+                    },
+                    'value': self.buttonValue
+                }
+            ],
+            'period': {
+                'start_time': '2017-01-22 13:01:00',
+                'duration': 0
+            },
+            'rule_make_time': time.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        # add data to list
+        immediate_control.append(control_data)
+        return immediate_control
 
 def main():
     # global top
