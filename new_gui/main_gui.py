@@ -244,12 +244,16 @@ class MainWindow(tk.Frame):
         self.sensorFrame = tk.Frame(master, width=self.width/3, height=self.height/3, bg="", colormap="new")
         # self.sensorFrame.pack_propagate(0)
         self.sensorFrame.place(relx=.5, rely=.5, anchor=CENTER)
-        button1 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="環境溫度感測器", fg="blue", command=self.sensorButtonEvent)
+        button1 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="環境溫度感測器", fg="blue", command=lambda: self.sensorButtonEvent(0))
         button1.pack(anchor=CENTER, fill=X)
-        button2 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="環境濕度感測器", fg="blue", command=self.sensorButtonEvent)
+        button2 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="環境濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(1))
         button2.pack(anchor=CENTER, fill=X)
-        button3 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="土壤濕度感測器", fg="blue", command=self.sensorButtonEvent)
+        button3 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="土壤濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(2))
         button3.pack(anchor=CENTER, fill=X)
+        button4 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="土壤濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(3))
+        button4.pack(anchor=CENTER, fill=X)
+        button5 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="土壤濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(4))
+        button5.pack(anchor=CENTER, fill=X)
 
     def createActuatorFrame(self, master):
         self.frameType = 7
@@ -263,21 +267,38 @@ class MainWindow(tk.Frame):
         button3 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 3", fg="blue", command=lambda: self.actuatorButtonEvent(7, 40007))
         button3.pack(anchor=CENTER, fill=X)
 
-    def createSensorDataFrame(self, master):
+    def createSensorDataFrame(self, master, sensor_data, tid):
         self.frameType = 8
+        newButtonHeight = 4
         self.sensorDataFrame = tk.Frame(master, width=self.width/2, height=self.height/2, bg="", colormap="new")
-        # self.sensorFrame.pack_propagate(0)
         self.sensorDataFrame.place(relx=.5, rely=.5, anchor=CENTER)
-        button1 = Label(self.sensorDataFrame, width=btnWidth, height=btnHeight, text="CID: 140.116.82.0")
-        button1.pack(anchor=CENTER, fill=X)
-        button2 = Label(self.sensorDataFrame, width=btnWidth, height=btnHeight, text="DID: 2")
-        button2.pack(anchor=CENTER, fill=X)
-        button3 = Label(self.sensorDataFrame, width=btnWidth, height=btnHeight, text="Type: ST")
-        button3.pack(anchor=CENTER, fill=X)
-        button4 = Label(self.sensorDataFrame, width=btnWidth, height=btnHeight, text="TID: 23")
-        button4.pack(anchor=CENTER, fill=X)
-        button5 = Label(self.sensorDataFrame, width=btnWidth, height=btnHeight, text="Address: 40002")
-        button5.pack(anchor=CENTER, fill=X)
+        # set sensor type with tid
+        type_text = self.assignTypeWithTID(tid)
+        # unpack sensor data
+        label1 = Label(self.sensorDataFrame, width=btnWidth, height=newButtonHeight, text="CID: 192.168.1.15")
+        label1.pack(anchor=CENTER, fill=X)
+        label2 = Label(self.sensorDataFrame, width=btnWidth, height=newButtonHeight, text="DID: 0")
+        label2.pack(anchor=CENTER, fill=X)
+        label3 = Label(self.sensorDataFrame, width=btnWidth, height=newButtonHeight, text="Type: " + type_text)
+        label3.pack(anchor=CENTER, fill=X)
+        label4 = Label(self.sensorDataFrame, width=btnWidth, height=newButtonHeight, text="TID: " + str(tid))
+        label4.pack(anchor=CENTER, fill=X)
+        label5 = Label(self.sensorDataFrame, width=btnWidth, height=newButtonHeight, text="Address: 4000" + str(tid))
+        label5.pack(anchor=CENTER, fill=X)
+        label6 = Label(self.sensorDataFrame, width=btnWidth, height=newButtonHeight, text=str(sensor_data))
+        label6.pack(anchor=CENTER, fill=X)
+
+    def assignTypeWithTID(self, tid):
+        if tid == 0:
+            return "ST"
+        elif tid == 1:
+            return "SH"
+        elif tid == 2:
+            return "SHT"
+        elif tid == 3:
+            return "SPH"
+        else:
+            return "SI"
 
     def createMotionFrame(self, master):
         self.frameType = 9
@@ -309,13 +330,18 @@ class MainWindow(tk.Frame):
     def dacButtonEvent(self):
         self.DACFrame.destroy()
         if (self.isActuator == 0):
+            self.DID = 0
             self.createSensorFrame(self.secondframe)
         else:
+            self.DID = 1
             self.createActuatorFrame(self.secondframe)
 
-    def sensorButtonEvent(self):
+    def sensorButtonEvent(self, tid):
+        # get data
+        self.TID = tid
+        sensor_data = self.receivceRpcData(tid)
         self.sensorFrame.destroy()
-        self.createSensorDataFrame(self.secondframe)
+        self.createSensorDataFrame(self.secondframe, sensor_data, tid)
 
     def actuatorButtonEvent(self, tid, actuator_address):
         self.TID = tid
@@ -359,6 +385,12 @@ class MainWindow(tk.Frame):
             self.createActuatorFrame(self.secondframe)
         else:
             pass
+
+    def receivceRpcData(self, tid):
+        # send request to server and get data back
+        sensorData = RpcClient.rpc_get_sensor_data(tid)
+        print(sensorData)
+        return sensorData
 
     def packRpcData(self):
         immediate_control = []
