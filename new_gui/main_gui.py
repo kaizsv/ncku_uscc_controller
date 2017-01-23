@@ -15,6 +15,7 @@ from rule_gui.RuleGUI import RuleWindow
 from helper.DataReceiver import Receiver as DR
 import rpc_related.rpc_client as RpcClient
 import time
+from subprocess import call
 
 global btnWidth
 global btnHeight
@@ -77,6 +78,8 @@ class MainWindow(tk.Frame):
         self.CID = RpcClient.server_ip
         self.buttonValue = 0
         self.TYPE = 'AW'
+        #self.rfdevice = RFDevice(17)
+        #self.rfdevice.enable_tx()
 
     def setMainWindow(self, master, bg, x, y):
         self.secondframe = tk.Frame(master)
@@ -361,6 +364,8 @@ class MainWindow(tk.Frame):
             pass
 
     def packRpcData(self):
+        send_data = self.buttonValue + 1
+        gggg = call('python3 rpi-rf_send.py {0}'.format(send_data), shell=True)
         immediate_control = []
         control_data = {
             'condition': None,
