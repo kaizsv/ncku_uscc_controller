@@ -235,15 +235,15 @@ class MainWindow(tk.Frame):
         self.sensorFrame = tk.Frame(master, width=self.width/3, height=self.height/3, bg="", colormap="new")
         # self.sensorFrame.pack_propagate(0)
         self.sensorFrame.place(relx=.5, rely=.5, anchor=CENTER)
-        button1 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="環境溫度感測器", fg="blue", command=lambda: self.sensorButtonEvent(0))
+        button1 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="環境溫度感測器", fg="blue", command=lambda: self.sensorButtonEvent(1))
         button1.pack(anchor=CENTER, fill=X)
-        button2 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="環境濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(1))
+        button2 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="環境濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(2))
         button2.pack(anchor=CENTER, fill=X)
-        button3 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="土壤濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(2))
+        button3 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="土壤酸鹼值感測器", fg="blue", command=lambda: self.sensorButtonEvent(3))
         button3.pack(anchor=CENTER, fill=X)
-        button4 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="土壤濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(3))
+        button4 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="土壤濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(4))
         button4.pack(anchor=CENTER, fill=X)
-        button5 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="土壤濕度感測器", fg="blue", command=lambda: self.sensorButtonEvent(4))
+        button5 = Button(self.sensorFrame, width=btnWidth, height=btnHeight, text="照度感測器", fg="blue", command=lambda: self.sensorButtonEvent(5))
         button5.pack(anchor=CENTER, fill=X)
 
     def createActuatorFrame(self, master):
@@ -251,11 +251,11 @@ class MainWindow(tk.Frame):
         self.actuatorFrame = tk.Frame(master, width=self.width/3, height=self.height/3, bg="", colormap="new")
         # self.sensorFrame.pack_propagate(0)
         self.actuatorFrame.place(relx=.5, rely=.5, anchor=CENTER)
-        button1 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 1", fg="red", command=lambda: self.actuatorButtonEvent(5, 40005))
+        button1 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 1", fg="red", command=lambda: self.actuatorButtonEvent(6, 40006))
         button1.pack(anchor=CENTER, fill=X)
-        button2 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 2", fg="green", command=lambda: self.actuatorButtonEvent(6, 40006))
+        button2 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 2", fg="green", command=lambda: self.actuatorButtonEvent(7, 40007))
         button2.pack(anchor=CENTER, fill=X)
-        button3 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 3", fg="blue", command=lambda: self.actuatorButtonEvent(7, 40007))
+        button3 = Button(self.actuatorFrame, width=btnWidth, height=btnHeight, text="灑水器 3", fg="blue", command=lambda: self.actuatorButtonEvent(8, 40008))
         button3.pack(anchor=CENTER, fill=X)
 
     def createSensorDataFrame(self, master, sensor_data, tid):
@@ -280,11 +280,11 @@ class MainWindow(tk.Frame):
         label6.pack(anchor=CENTER, fill=X)
 
     def assignTypeWithTID(self, tid):
-        if tid == 0:
+        if tid == 1:
             return "ST"
-        elif tid == 1:
-            return "SH"
         elif tid == 2:
+            return "SH"
+        elif tid == 4:
             return "SHE"
         elif tid == 3:
             return "SPH"
